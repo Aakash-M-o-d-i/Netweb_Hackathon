@@ -143,9 +143,10 @@ NewWeb/
 
 This tool is for educational and demonstration purposes only. It should not be used as a substitute for professional medical advice, diagnosis, or treatment. Always consult qualified healthcare professionals for medical decisions.
 
-## 🤝 Contributing
+## Contributing
 
-This is a hackathon project demonstrating AI for social good in maternal healthcare.
+- Vineet Kumar @VineetKumar2004
+- Rajesh Kumar Mishra @rajeshmishra-11
 
 ## License
 
