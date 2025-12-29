@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../contexts/TranslationContext';
 
-function AssessmentForm({ onSubmit, loading }) {
+function AssessmentForm({ onSubmit, loading, profileData }) {
+    const { currentLanguage, t } = useTranslation();
     const [formData, setFormData] = useState({
         age: 28,
         num_pregnancies: 1,
@@ -13,6 +15,23 @@ function AssessmentForm({ onSubmit, loading }) {
         previous_complications: false
     });
 
+    // Update form data when profileData changes
+    useEffect(() => {
+        if (profileData) {
+            setFormData({
+                age: profileData.age || 28,
+                num_pregnancies: profileData.num_pregnancies || 1,
+                trimester: profileData.trimester || 2,
+                hemoglobin: profileData.hemoglobin || 12.0,
+                systolic_bp: profileData.systolic_bp || 120,
+                diastolic_bp: profileData.diastolic_bp || 80,
+                blood_sugar: profileData.blood_sugar || 95,
+                bmi: profileData.bmi || 22.0,
+                previous_complications: profileData.previous_complications || false
+            });
+        }
+    }, [profileData]);
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -23,21 +42,22 @@ function AssessmentForm({ onSubmit, loading }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit(formData);
+        // Include language in submission
+        onSubmit({ ...formData, language: currentLanguage });
     };
 
     return (
         <div className="card" id="assessment-form">
-            <h2>Risk Assessment Form</h2>
+            <h2>{t('formTitle')}</h2>
             <p style={{ marginBottom: '2rem' }}>
-                Enter patient health parameters for AI-powered risk prediction
+                {t('formSubtitle')}
             </p>
 
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-2">
                     <div className="input-group">
                         <label htmlFor="age">
-                            Age (years) <span style={{ color: 'var(--danger)' }}>*</span>
+                            {t('age')} <span style={{ color: 'var(--danger)' }}>*</span>
                         </label>
                         <input
                             type="number"
@@ -49,12 +69,12 @@ function AssessmentForm({ onSubmit, loading }) {
                             max="50"
                             required
                         />
-                        <div className="input-hint">Normal: 20-35 years</div>
+                        <div className="input-hint">{t('ageHint')}</div>
                     </div>
 
                     <div className="input-group">
                         <label htmlFor="num_pregnancies">
-                            Number of Pregnancies <span style={{ color: 'var(--danger)' }}>*</span>
+                            {t('numPregnancies')} <span style={{ color: 'var(--danger)' }}>*</span>
                         </label>
                         <input
                             type="number"
@@ -66,12 +86,12 @@ function AssessmentForm({ onSubmit, loading }) {
                             max="15"
                             required
                         />
-                        <div className="input-hint">Total number including current</div>
+                        <div className="input-hint">{t('numPregnanciesHint')}</div>
                     </div>
 
                     <div className="input-group">
                         <label htmlFor="trimester">
-                            Current Trimester <span style={{ color: 'var(--danger)' }}>*</span>
+                            {t('trimester')} <span style={{ color: 'var(--danger)' }}>*</span>
                         </label>
                         <select
                             id="trimester"
@@ -80,15 +100,15 @@ function AssessmentForm({ onSubmit, loading }) {
                             onChange={handleChange}
                             required
                         >
-                            <option value="1">First Trimester (1-12 weeks)</option>
-                            <option value="2">Second Trimester (13-26 weeks)</option>
-                            <option value="3">Third Trimester (27-40 weeks)</option>
+                            <option value="1">{t('trimesterFirst')}</option>
+                            <option value="2">{t('trimesterSecond')}</option>
+                            <option value="3">{t('trimesterThird')}</option>
                         </select>
                     </div>
 
                     <div className="input-group">
                         <label htmlFor="hemoglobin">
-                            Hemoglobin (g/dL) <span style={{ color: 'var(--danger)' }}>*</span>
+                            {t('hemoglobin')} <span style={{ color: 'var(--danger)' }}>*</span>
                         </label>
                         <input
                             type="number"
@@ -101,12 +121,12 @@ function AssessmentForm({ onSubmit, loading }) {
                             step="0.1"
                             required
                         />
-                        <div className="input-hint">Normal: 12-16 g/dL | Anemia: &lt;10 g/dL</div>
+                        <div className="input-hint">{t('hemoglobinHint')}</div>
                     </div>
 
                     <div className="input-group">
                         <label htmlFor="systolic_bp">
-                            Systolic BP (mmHg) <span style={{ color: 'var(--danger)' }}>*</span>
+                            {t('systolicBp')} <span style={{ color: 'var(--danger)' }}>*</span>
                         </label>
                         <input
                             type="number"
@@ -118,12 +138,12 @@ function AssessmentForm({ onSubmit, loading }) {
                             max="200"
                             required
                         />
-                        <div className="input-hint">Normal: 90-120 mmHg</div>
+                        <div className="input-hint">{t('systolicHint')}</div>
                     </div>
 
                     <div className="input-group">
                         <label htmlFor="diastolic_bp">
-                            Diastolic BP (mmHg) <span style={{ color: 'var(--danger)' }}>*</span>
+                            {t('diastolicBp')} <span style={{ color: 'var(--danger)' }}>*</span>
                         </label>
                         <input
                             type="number"
@@ -135,12 +155,12 @@ function AssessmentForm({ onSubmit, loading }) {
                             max="130"
                             required
                         />
-                        <div className="input-hint">Normal: 60-80 mmHg</div>
+                        <div className="input-hint">{t('diastolicHint')}</div>
                     </div>
 
                     <div className="input-group">
                         <label htmlFor="blood_sugar">
-                            Blood Sugar (mg/dL) <span style={{ color: 'var(--danger)' }}>*</span>
+                            {t('bloodSugar')} <span style={{ color: 'var(--danger)' }}>*</span>
                         </label>
                         <input
                             type="number"
@@ -153,12 +173,12 @@ function AssessmentForm({ onSubmit, loading }) {
                             step="0.1"
                             required
                         />
-                        <div className="input-hint">Normal: 70-125 mg/dL | High: &gt;140 mg/dL</div>
+                        <div className="input-hint">{t('bloodSugarHint')}</div>
                     </div>
 
                     <div className="input-group">
                         <label htmlFor="bmi">
-                            BMI (kg/m²) <span style={{ color: 'var(--danger)' }}>*</span>
+                            {t('bmi')} <span style={{ color: 'var(--danger)' }}>*</span>
                         </label>
                         <input
                             type="number"
@@ -171,7 +191,7 @@ function AssessmentForm({ onSubmit, loading }) {
                             step="0.1"
                             required
                         />
-                        <div className="input-hint">Normal: 18.5-24.9 | Calculate: weight(kg) / height(m)²</div>
+                        <div className="input-hint">{t('bmiHint')}</div>
                     </div>
                 </div>
 
@@ -184,7 +204,7 @@ function AssessmentForm({ onSubmit, loading }) {
                         onChange={handleChange}
                     />
                     <label htmlFor="previous_complications" style={{ cursor: 'pointer', marginBottom: 0 }}>
-                        Previous pregnancy complications (pre-eclampsia, gestational diabetes, etc.)
+                        {t('prevComplications')}
                     </label>
                 </div>
 
@@ -197,10 +217,10 @@ function AssessmentForm({ onSubmit, loading }) {
                     {loading ? (
                         <>
                             <span className="loading"></span>
-                            Analyzing...
+                            {t('calculating')}
                         </>
                     ) : (
-                        '🔍 Calculate Risk Score'
+                        t('calculateButton')
                     )}
                 </button>
             </form>

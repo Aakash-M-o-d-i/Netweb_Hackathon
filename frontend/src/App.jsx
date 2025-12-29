@@ -5,10 +5,14 @@ import AssessmentForm from './components/AssessmentForm';
 import ResultsDisplay from './components/ResultsDisplay';
 import ExampleProfiles from './components/ExampleProfiles';
 import ThemeToggle from './components/ThemeToggle';
+import LanguageSelector from './components/LanguageSelector';
+import { TranslationProvider, useTranslation } from './contexts/TranslationContext';
 
 function App() {
+  const { t } = useTranslation();
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [selectedProfileData, setSelectedProfileData] = useState(null);
   const [theme, setTheme] = useState(() => {
     // Get theme from localStorage or default to 'dark'
     return localStorage.getItem('theme') || 'dark';
@@ -57,13 +61,18 @@ function App() {
     }
   };
 
-  const handleExampleProfile = async (profileData) => {
-    await handlePrediction(profileData);
+  const handleExampleProfile = (profileData) => {
+    // Just populate the form, don't auto-submit
+    setSelectedProfileData(profileData);
+    setResult(null); // Clear any previous results
+    // Scroll to form
+    document.getElementById('assessment-form')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <div className="App">
       <ThemeToggle theme={theme} onToggle={toggleTheme} />
+      <LanguageSelector />
       <Hero />
 
       <div className="container" style={{ paddingTop: '4rem', paddingBottom: '4rem' }}>
@@ -71,6 +80,7 @@ function App() {
           <AssessmentForm
             onSubmit={handlePrediction}
             loading={loading}
+            profileData={selectedProfileData}
           />
         </section>
 
@@ -86,43 +96,38 @@ function App() {
 
         <section id="about" className="fade-in" style={{ marginTop: '4rem' }}>
           <div className="card">
-            <h2>About Maternal Health Risk Prediction</h2>
+            <h2>{t('aboutTitle')}</h2>
             <div className="grid grid-2" style={{ marginTop: '2rem' }}>
               <div>
                 <h3 style={{ fontSize: '1.25rem', color: 'var(--primary-light)' }} align="center">
-                  Purpose
+                  {t('purposeTitle')}
                 </h3>
                 <p align="center">
-                  This AI-powered tool helps healthcare workers identify high-risk pregnancies
-                  early, enabling targeted interventions and potentially saving lives in rural
-                  and underserved areas.
+                  {t('purposeText')}
                 </p>
               </div>
               <div>
                 <h3 style={{ fontSize: '1.25rem', color: 'var(--secondary-light)' }} align="center">
-                  Technology
+                  {t('technologyTitle')}
                 </h3>
                 <p align="center">
-                  Uses machine learning (Logistic Regression) trained on maternal health indicators
-                  aligned with WHO guidelines to predict complications risk.
+                  {t('technologyText')}
                 </p>
               </div>
               <div>
                 <h3 style={{ fontSize: '1.25rem', color: 'var(--success)' }} align="center">
-                  Risk Factors
+                  {t('riskFactorsTitle2')}
                 </h3>
                 <p align="center">
-                  Analyzes age, anemia (hemoglobin), blood pressure, blood sugar, BMI,
-                  and pregnancy history to calculate comprehensive risk scores.
+                  {t('riskFactorsText')}
                 </p>
               </div>
               <div>
                 <h3 style={{ fontSize: '1.25rem', color: 'var(--warning)' }} align="center">
-                  Disclaimer
+                  {t('disclaimerTitle')}
                 </h3>
                 <p align="center">
-                  This tool is for educational and demonstration purposes. Always consult
-                  qualified healthcare professionals for medical decisions.
+                  {t('disclaimerText')}
                 </p>
               </div>
             </div>
@@ -136,10 +141,19 @@ function App() {
         color: 'var(--text-muted)',
         borderTop: '1px solid var(--border)'
       }}>
-        <p>Maternal Health Risk Predictor | AI for Social Good | Hackathon 2025</p>
+        <p>{t('footerText')}</p>
       </footer>
     </div>
   );
 }
 
-export default App;
+// Wrapper component to provide translation context
+function AppWithProvider() {
+  return (
+    <TranslationProvider>
+      <App />
+    </TranslationProvider>
+  );
+}
+
+export default AppWithProvider;

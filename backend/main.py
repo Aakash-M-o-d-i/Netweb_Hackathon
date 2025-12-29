@@ -1,8 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from schemas import PatientData, RiskPrediction, ModelInfo, ContributingFactor
+from schemas import (
+    PatientData, RiskPrediction, ModelInfo, ContributingFactor,
+    Language, TranslateRequest, TranslateResponse
+)
 from model import risk_model
-from typing import Dict
+from translation_service import translation_service
+from typing import Dict, List
 import uvicorn
 
 app = FastAPI(
@@ -51,19 +55,69 @@ async def get_model_info():
         raise HTTPException(status_code=500, detail=f"Error retrieving model info: {str(e)}")
 
 
+@app.get("/api/languages", response_model=List[Language])
+async def get_supported_languages():
+    """Get list of supported languages for translation"""
+    try:
+        languages = translation_service.get_supported_languages()
+        return [
+            Language(code=code, name=name)
+            for code, name in languages.items()
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving languages: {str(e)}")
+
+
+@app.post("/api/translate", response_model=TranslateResponse)
+async def translate_text(request: TranslateRequest):
+    """Translate text to specified language using Gemini AI"""
+    try:
+        if not translation_service.is_available():
+            raise HTTPException(
+                status_code=503,
+                detail="Translation service not available. Please configure GEMINI_API_KEY."
+            )
+        
+        translated = translation_service.translate_text(
+            text=request.text,
+            target_language=request.target_language,
+            source_language=request.source_language
+        )
+        
+        return TranslateResponse(
+            original_text=request.text,
+            translated_text=translated,
+            source_language=request.source_language,
+            target_language=request.target_language
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Translation error: {str(e)}")
+
+
 @app.post("/api/predict", response_model=RiskPrediction)
 async def predict_risk(patient: PatientData):
     """
     Predict maternal health risk based on patient data
     
-    Returns risk score (0-100), category (Low/Medium/High), and recommendations
+    Returns risk score (0-100), category (Low/Medium/High), and recommendations.
+    If language parameter is provided, translates results to that language.
     """
     try:
         # Convert patient data to dictionary
         patient_dict = patient.model_dump()
         
+        # Get requested language
+        target_language = patient_dict.pop('language', 'en')
+        
         # Get prediction from model
         prediction = risk_model.predict(patient_dict)
+        
+        # Translate prediction if not English
+        if target_language != 'en' and translation_service.is_available():
+            prediction = translation_service.translate_risk_prediction(
+                prediction,
+                target_language
+            )
         
         # Convert contributing factors to proper format
         contributing_factors = [

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../contexts/TranslationContext';
 
 function ExampleProfiles({ onSelectProfile }) {
+    const { t } = useTranslation();
     const [examples, setExamples] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -18,8 +20,8 @@ function ExampleProfiles({ onSelectProfile }) {
             // Fallback examples if backend is not available
             setExamples([
                 {
-                    name: "High Risk: Teenage Mother with Anemia",
-                    description: "17-year-old with severe anemia and hypertension",
+                    name: t('highRiskProfile'),
+                    description: t('highRiskDesc'),
                     data: {
                         age: 17,
                         num_pregnancies: 1,
@@ -33,8 +35,8 @@ function ExampleProfiles({ onSelectProfile }) {
                     }
                 },
                 {
-                    name: "Low Risk: Healthy Adult Mother",
-                    description: "28-year-old with normal health parameters",
+                    name: t('lowRiskProfile'),
+                    description: t('lowRiskDesc'),
                     data: {
                         age: 28,
                         num_pregnancies: 2,
@@ -48,8 +50,8 @@ function ExampleProfiles({ onSelectProfile }) {
                     }
                 },
                 {
-                    name: "Medium Risk: Advanced Maternal Age",
-                    description: "36-year-old with elevated blood pressure",
+                    name: t('mediumRiskProfile'),
+                    description: t('mediumRiskDesc'),
                     data: {
                         age: 36,
                         num_pregnancies: 3,
@@ -83,9 +85,9 @@ function ExampleProfiles({ onSelectProfile }) {
 
     return (
         <div className="card">
-            <h2 style={{ marginBottom: '1rem' }}>📊 Example Patient Profiles</h2>
+            <h2 style={{ marginBottom: '1rem' }}>📊 {t('examplesTitle')}</h2>
             <p style={{ marginBottom: '2rem' }}>
-                Click on any profile to see AI risk prediction demonstration
+                {t('examplesSubtitle')}
             </p>
 
             <div className="grid grid-3">
@@ -174,7 +176,7 @@ function ExampleProfiles({ onSelectProfile }) {
                                     handleClick(profile);
                                 }}
                             >
-                                View Prediction →
+                                {t('tryProfile')} →
                             </button>
                         </div>
                     );

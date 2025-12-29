@@ -1,7 +1,9 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { useTranslation } from '../contexts/TranslationContext';
 
 function ResultsDisplay({ result }) {
+    const { t } = useTranslation();
     const riskColor =
         result.risk_category === 'Low' ? 'var(--low-risk)' :
             result.risk_category === 'Medium' ? 'var(--medium-risk)' :
@@ -26,7 +28,7 @@ function ResultsDisplay({ result }) {
     return (
         <div className="card">
             <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                Risk Assessment Results
+                {t('resultsTitle')}
             </h2>
 
             {/* Risk Score Display */}
@@ -52,10 +54,10 @@ function ResultsDisplay({ result }) {
                     fontSize: '1.25rem',
                     padding: '0.75rem 2rem'
                 }}>
-                    {result.risk_category} Risk
+                    {result.risk_category}
                 </div>
                 <p style={{ marginTop: '1rem', fontSize: '0.95rem' }}>
-                    Probability: {(result.probability * 100).toFixed(1)}%
+                    {t('probability')}: {(result.probability * 100).toFixed(1)}%
                 </p>
             </div>
 
@@ -68,7 +70,7 @@ function ResultsDisplay({ result }) {
                     border: '1px solid var(--border)'
                 }}>
                     <h3 style={{ fontSize: '1.25rem', textAlign: 'center', marginBottom: '1rem' }}>
-                        Risk Distribution
+                        {t('riskDistribution')}
                     </h3>
                     <ResponsiveContainer width="100%" height={250}>
                         <PieChart>
@@ -97,7 +99,7 @@ function ResultsDisplay({ result }) {
                     border: '1px solid var(--border)'
                 }}>
                     <h3 style={{ fontSize: '1.25rem', textAlign: 'center', marginBottom: '1rem' }}>
-                        Contributing Factors
+                        {t('contributingFactors')}
                     </h3>
                     <ResponsiveContainer width="100%" height={250}>
                         <BarChart data={chartData}>
@@ -129,7 +131,7 @@ function ResultsDisplay({ result }) {
             {/* Contributing Factors List */}
             {result.contributing_factors && result.contributing_factors.length > 0 && (
                 <div style={{ marginBottom: '2rem' }}>
-                    <h3 style={{ marginBottom: '1rem' }}>🔍 Risk Factors Identified</h3>
+                    <h3 style={{ marginBottom: '1rem' }}>{t('riskFactorsTitle')}</h3>
                     <div className="grid" style={{ gap: 'var(--spacing-sm)' }}>
                         {result.contributing_factors.map((factor, index) => (
                             <div
@@ -169,7 +171,7 @@ function ResultsDisplay({ result }) {
                                     fontSize: '0.9rem',
                                     marginBottom: 'var(--spacing-xs)'
                                 }}>
-                                    Value: {factor.value}
+                                    {t('value')}: {factor.value}
                                 </div>
                                 <div style={{
                                     color: 'var(--text-muted)',
@@ -186,7 +188,7 @@ function ResultsDisplay({ result }) {
             {/* Recommendations */}
             {result.recommendations && result.recommendations.length > 0 && (
                 <div className="alert alert-info">
-                    <h3 style={{ marginBottom: '1rem' }}>📋 Recommended Actions</h3>
+                    <h3 style={{ marginBottom: '1rem' }}>{t('recommendationsTitle')}</h3>
                     <ul style={{
                         listStyle: 'none',
                         padding: 0,
@@ -217,13 +219,13 @@ function ResultsDisplay({ result }) {
                     className="btn btn-primary"
                     onClick={() => window.print()}
                 >
-                    🖨️ Print Report
+                    {t('printReport')}
                 </button>
                 <button
                     className="btn btn-outline"
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 >
-                    📝 New Assessment
+                    {t('newAssessment')}
                 </button>
             </div>
         </div>

@@ -13,6 +13,7 @@ class PatientData(BaseModel):
     blood_sugar: float = Field(..., ge=60.0, le=300.0, description="Blood sugar in mg/dL")
     bmi: float = Field(..., ge=12.0, le=50.0, description="Body Mass Index")
     previous_complications: bool = Field(..., description="Previous pregnancy complications")
+    language: Optional[str] = Field(default='en', description="Preferred language code (en, hi, bn, mr, te, ta)")
 
     class Config:
         json_schema_extra = {
@@ -55,3 +56,33 @@ class ModelInfo(BaseModel):
     accuracy: float
     training_samples: int
     description: str
+
+
+class Language(BaseModel):
+    """Supported language information"""
+    code: str = Field(..., description="Language code (e.g., 'en', 'hi')")
+    name: str = Field(..., description="Language name in English and native script")
+
+
+class TranslateRequest(BaseModel):
+    """Request to translate text"""
+    text: str = Field(..., description="Text to translate")
+    target_language: str = Field(..., description="Target language code")
+    source_language: str = Field(default='en', description="Source language code")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "text": "High risk pregnancy requires immediate attention",
+                "target_language": "hi",
+                "source_language": "en"
+            }
+        }
+
+
+class TranslateResponse(BaseModel):
+    """Translation response"""
+    original_text: str
+    translated_text: str
+    source_language: str
+    target_language: str
